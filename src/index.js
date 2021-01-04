@@ -9,16 +9,16 @@ const port= process.env.PORT|| 3000
 
 const publicDirectoryPath = path.join(__dirname,'../public')
 app.use(express.static(publicDirectoryPath)) 
-let count = 0
+let message="";
 
  io.on('connection',(socket)=>{
      console.log('New websocket connection')
-     socket.emit('message','welcome')
+    //  socket.emit('message','welcome')
     //  socket.emit('countupdated',count)
-    //  socket.on('increment',()=>{
-    //      count++
-    //      socket.emit('countupdated',count)
-    //  })
+     socket.on('Message',()=>{
+        message="A new user has been added"
+         socket.emit('message',message)
+     })
  })
 
 server.listen(port,()=>{
