@@ -9,13 +9,18 @@ const port= process.env.PORT|| 3000
 
 const publicDirectoryPath = path.join(__dirname,'../public')
 app.use(express.static(publicDirectoryPath)) 
-let message=""
+
  io.on('connection',(socket)=>{
      console.log('New websocket connection')
      socket.emit('message','welcome')
+     socket.broadcast.emit('message','A new user has joined')
   
      socket.on('sendMessage',(message)=>{
          io.emit('message',message)
+     })
+
+     socket.on('disconnect',()=>{
+         io.emit('message','user has left the chat')
      })
  })
 
