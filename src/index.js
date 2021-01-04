@@ -22,6 +22,9 @@ app.use(express.static(publicDirectoryPath))
      socket.on('disconnect',()=>{
          io.emit('message','user has left the chat')
      })
+     socket.on('sendLocation',()=>{
+         io.emit('message',`https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
+     })
  })
 
 server.listen(port,()=>{
