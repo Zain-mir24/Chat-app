@@ -6,6 +6,6 @@ socket.on('message',(message)=>{
 
 document.querySelector('#Message-form').addEventListener('submit',(e)=>{
   e.preventDefault()
-  const message=e.target.elements.message
+  const message= document.querySelector('input').value
   socket.emit('sendMessage',message)
 })
