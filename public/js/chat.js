@@ -7,8 +7,8 @@ socket.on('message',(message)=>{
 document.querySelector('#Message-form').addEventListener('submit',(e)=>{
   e.preventDefault()
   const message= e.target.elements.message.value
-  socket.emit('sendMessage',message,()=>{
-    console.log('The essage was delivered!')
+  socket.emit('sendMessage',message,(message)=>{
+    console.log('The message was delivered!',message)
   })
 })
 

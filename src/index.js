@@ -17,7 +17,7 @@ app.use(express.static(publicDirectoryPath))
   
      socket.on('sendMessage',(message,callback)=>{
          io.emit('message',message)
-         callback()
+         callback('delivered')
      })
 
      socket.on('disconnect',()=>{
