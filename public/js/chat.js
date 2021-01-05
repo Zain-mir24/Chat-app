@@ -1,27 +1,47 @@
-const socket =io()
+const socket = io();
+//Elements
+const $messageForm = document.querySelector("#Message-form");
+const $messageFormInput = $messageForm.querySelector("input");
+const $messageFormButton = $messageForm.querySelector("button");
+const $sendLocation=document.querySelector("#send-Location")
+socket.on("message", (message) => {
+  console.log(message);
+});
 
-socket.on('message',(message)=>{
-  console.log(message)
-})
+$messageForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  $messageFormButton.setAttribute("disabled", "disabled");
+  //disable
+  const message = e.target.elements.message.value;
 
-document.querySelector('#Message-form').addEventListener('submit',(e)=>{
-  e.preventDefault()
-  const message= e.target.elements.message.value
-  socket.emit('sendMessage',message,(message)=>{
-    console.log('The message was delivered!',message)
-  })
-})
+  socket.emit("sendMessage", message, (error) => {
+    $messageFormButton.removeAttribute("disabled");
+    $messageFormInput.value = "";
+    $messageFormInput.focus();
+    //enable
+    if (error) {
+      return console.log(error);
+    }
+    console.log("Message Delivered !");
+  });
+});
 
-document.querySelector('#send-Location').addEventListener('click',()=>{
-  if(navigator.geolocation){
-    return alert('GeoLocation is not supported by your browser')
+$sendLocation.addEventListener("click", () => {
+  if (navigator.geolocation) {
+    return alert("GeoLocation is not supported by your browser");
   }
-navigator.geolocation.getCurrentPosition((position)=>{
-  
-  socket.emit('sendLocation',{  
-    latitude:position.coords.latitude,
-    longitude:position.coords.longitude
-  })
-})
-
-})
+  $sendLocationButton.setAttribute('disabled','disabled')
+  navigator.geolocation.getCurrentPosition((position) => {
+    socket.emit(
+      "sendLocation",
+      {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      },
+      () => {
+        $sendLocationButton.removeAttribute('disabled')
+        console.log("prining location shared");
+      }
+    );
+  });
+});
