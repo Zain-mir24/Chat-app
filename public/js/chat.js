@@ -5,9 +5,11 @@ const $messageFormInput = $messageForm.querySelector("input");
 const $messageFormButton = $messageForm.querySelector("button");
 const $sendLocation=document.querySelector("#send-Location");
 const $messages = document.querySelector('#messages')
+const $locationmessage = document.querySelector('#locationmessage')
 
 //Templates
 const messageTemplate = document.querySelector('#message-template').innerHTML
+const locationtemplate = document.querySelector('#location-message-template').innerHTML
 
 socket.on('message', (message) => {
   console.log(message);
@@ -16,7 +18,14 @@ socket.on('message', (message) => {
   })
   $messages.insertAdjacentHTML('beforeend',html)
 });
+socket.on('locationmessage',(urlmessage)=>{
+  console.log(urlmessage)
+  const html = Mustache.render(locationtemplate,{
+    urlmessage
+  })
+  $messages.insertAdjacentHTML('beforeend',html)
 
+})
 $messageForm.addEventListener("submit", (e) => {
   e.preventDefault();
   $messageFormButton.setAttribute("disabled", "disabled");
@@ -26,7 +35,7 @@ $messageForm.addEventListener("submit", (e) => {
   socket.emit("sendMessage", message, (error) => {
     $messageFormButton.removeAttribute("disabled");
     $messageFormInput.value = "";
-    $messageFormInput.focus();
+    $messageFormInput.focus();  
     //enable
     if (error) {
       return console.log(error);

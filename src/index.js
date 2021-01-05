@@ -30,7 +30,7 @@ app.use(express.static(publicDirectoryPath))
          io.emit('message','user has left the chat')
      })
      socket.on('sendLocation',(coords,callback)=>{
-         io.emit('message',`https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
+         io.emit('locationmessage',`https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
          callback()
      })
  })
