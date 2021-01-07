@@ -6,7 +6,7 @@ const app = express()
 const server =http.createServer(app)
 const io=socketio(server)
 const Filter = require('bad-words')
-const {generateMessage}=require('./utils/messages')
+const {generateMessage,generateLocationurl}=require('./utils/messages')
 const port= process.env.PORT|| 3000
 
 const publicDirectoryPath = path.join(__dirname,'../public')
@@ -31,7 +31,7 @@ app.use(express.static(publicDirectoryPath))
          io.emit('message',generateMessage('user has let the chat'))
      })
      socket.on('sendLocation',(coords,callback)=>{
-         io.emit('locationmessage',`https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
+         io.emit('locationmessage',generateLocationurl(`https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
          callback()
      })
  })

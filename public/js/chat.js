@@ -15,14 +15,15 @@ socket.on('message', (message) => {
   console.log(message);
   const html = Mustache.render(messageTemplate, {
     message: message.text,
-    createdAt:message.createdAt
+    createdAt:moment(message.createdAt).format('h:mm a')
   })
   $messages.insertAdjacentHTML('beforeend', html)
 });
 socket.on('locationmessage', (urlmessage) => {
   console.log(urlmessage)
   const html = Mustache.render(locationtemplate, {
-    urlmessage
+    urlmessage:urlmessage.url,
+    createdAt:moment(urlmessage.createdAt).format('h:mm a')
   })
   $messages.insertAdjacentHTML('beforeend', html)
 
@@ -52,13 +53,10 @@ $sendLocation.addEventListener("click", () => {
     }
     $sendLocationButton.setAttribute('disabled', 'disabled')
     navigator.geolocation.getCurrentPosition((position) => {
-      socket.emit(
-        "sendLocation",
-        {
+      socket.emit( "sendLocation", {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
-        },
-        () => {
+        },  () => {
           $sendLocationButton.removeAttribute('disabled')
           console.log("prining location shared");
         }
