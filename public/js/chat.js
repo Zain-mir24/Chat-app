@@ -3,7 +3,7 @@ const socket = io();
 const $messageForm = document.querySelector("#Message-form");
 const $messageFormInput = $messageForm.querySelector("input");
 const $messageFormButton = $messageForm.querySelector("button");
-const $sendLocation=document.querySelector("#send-Location");
+const $sendLocation = document.querySelector("#send-Location");
 const $messages = document.querySelector('#messages')
 const $locationmessage = document.querySelector('#locationmessage')
 
@@ -13,17 +13,18 @@ const locationtemplate = document.querySelector('#location-message-template').in
 
 socket.on('message', (message) => {
   console.log(message);
-  const html = Mustache.render(messageTemplate,{
-    message:message
+  const html = Mustache.render(messageTemplate, {
+    message: message.text,
+    createdAt:message.createdAt
   })
-  $messages.insertAdjacentHTML('beforeend',html)
+  $messages.insertAdjacentHTML('beforeend', html)
 });
-socket.on('locationmessage',(urlmessage)=>{
+socket.on('locationmessage', (urlmessage) => {
   console.log(urlmessage)
-  const html = Mustache.render(locationtemplate,{
+  const html = Mustache.render(locationtemplate, {
     urlmessage
   })
-  $messages.insertAdjacentHTML('beforeend',html)
+  $messages.insertAdjacentHTML('beforeend', html)
 
 })
 $messageForm.addEventListener("submit", (e) => {
@@ -35,7 +36,7 @@ $messageForm.addEventListener("submit", (e) => {
   socket.emit("sendMessage", message, (error) => {
     $messageFormButton.removeAttribute("disabled");
     $messageFormInput.value = "";
-    $messageFormInput.focus();  
+    $messageFormInput.focus();
     //enable
     if (error) {
       return console.log(error);
@@ -45,21 +46,23 @@ $messageForm.addEventListener("submit", (e) => {
 });
 
 $sendLocation.addEventListener("click", () => {
-  if (navigator.geolocation) {
-    return alert("GeoLocation is not supported by your browser");
+  if (window.isSecureContext) {
+    if (navigator.geolocation) {
+      return alert("GeoLocation is not supported by your browser");
+    }
+    $sendLocationButton.setAttribute('disabled', 'disabled')
+    navigator.geolocation.getCurrentPosition((position) => {
+      socket.emit(
+        "sendLocation",
+        {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        },
+        () => {
+          $sendLocationButton.removeAttribute('disabled')
+          console.log("prining location shared");
+        }
+      );
+    });
   }
-  $sendLocationButton.setAttribute('disabled','disabled')
-  navigator.geolocation.getCurrentPosition((position) => {
-    socket.emit(
-      "sendLocation",
-      {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-      },
-      () => {
-        $sendLocationButton.removeAttribute('disabled')
-        console.log("prining location shared");
-      }
-    );
-  });
 });
