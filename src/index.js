@@ -7,20 +7,26 @@ const server =http.createServer(app)
 const io=socketio(server)
 const Filter = require('bad-words')
 const {generateMessage,generateLocationurl}=require('./utils/messages')
+const {adduser,removeuser,  getusersinroom,getuser} =require('./utils/users')
+const { Socket } = require('dgram')
 const port= process.env.PORT|| 3000
 
 const publicDirectoryPath = path.join(__dirname,'../public')
 app.use(express.static(publicDirectoryPath)) 
 
   io.on('connection',(socket)=>{      
-    socket.on('join',({username,room})=>{
-       socket.join(room)
+    socket.on('join',({username,room},callback)=>{
+      const {error,user} = adduser({id:Socket.id,username,room})
+      if(error){
+         return callback(error)
+      }
+       socket.join(user.room)
        console.log('New websocket connection')
        socket.emit('message',generateMessage('Welcome!'))
-       socket.broadcast.to(room).emit('message',generateMessage(`${username} has joined`))
+       socket.broadcast.to(user.room).emit('message',generateMessage(`${user.username} has joined`))
+       callback()
         
-        //socket.emit, io.emit , socket.broadcast.emit
-        //io.to.emit  socket.broadcast.to.emit
+        
 
     })
     socket.on('sendMessage',(message,callback)=>{
@@ -34,7 +40,12 @@ app.use(express.static(publicDirectoryPath))
      })
 
      socket.on('disconnect',()=>{
-         io.emit('message',generateMessage('user has let the chat'))
+        const user= removeuser(Socket.id)
+
+        if(user){
+            io.to(user.room).emit('message',generateMessage(`${user.username} has left the chat`))
+        }
+    
      })
      socket.on('sendLocation',(coords,callback)=>{
          io.emit('locationmessage',generateLocationurl(`https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
