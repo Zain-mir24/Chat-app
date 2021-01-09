@@ -40,7 +40,7 @@
   <script id="message-template" type="text/html">
  <div class="message">
    <p>
-     <span class="message__name">Some user name</span>
+     <span class="message__name">{{username}}</span>
      <span class="message__meta">{{createdAt}}</span>
    </p>
     <p>-{{message}}</p>
@@ -50,7 +50,7 @@
   <script id="location-message-template" type="text/html">
   <div class="message">
     <p>
-      <span class="message__name">Some user name</span>
+      <span class="message__name">{{username}}</span>
       <span class="message__meta">{{createdAt}}</span>
     </p>
    <p> {{createdAt}}- <a href="{{urlmessage}}" target="_blank">mylocation</a> <p>

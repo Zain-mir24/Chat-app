@@ -22,7 +22,7 @@ app.use(express.static(publicDirectoryPath))
       }
        socket.join(user.room)
        console.log('New websocket connection')
-       socket.emit('message',generateMessage('Welcome!'))
+       socket.emit('message',generateMessage('Admin','Welcome!'))
        socket.broadcast.to(user.room).emit('message',generateMessage(`${user.username} has joined`))
        callback()
         
@@ -31,11 +31,13 @@ app.use(express.static(publicDirectoryPath))
     })
     socket.on('sendMessage',(message,callback)=>{
    const filter = new Filter();
+    const user=getuser(Socket.id)
+
    if(filter.isProfane(message)){
        return callback('Profanity is not allowed')
    }
 
-         io.to('1').emit('message',generateMessage(message))
+         io.to(user.room).emit('message',generateMessage(user.username,message))
          callback()
      })
 
@@ -43,12 +45,13 @@ app.use(express.static(publicDirectoryPath))
         const user= removeuser(Socket.id)
 
         if(user){
-            io.to(user.room).emit('message',generateMessage(`${user.username} has left the chat`))
+            io.to(user.room).emit('message',generateMessage('Admin',`${user.username} has left the chat`))
         }
     
      })
      socket.on('sendLocation',(coords,callback)=>{
-         io.emit('locationmessage',generateLocationurl(`https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
+         const user= getuser(Socket.id)
+         io.emit('locationmessage',generateLocationurl(user.username,`https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
          callback()
      })
  })
