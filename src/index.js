@@ -40,8 +40,7 @@ app.use(express.static(publicDirectoryPath))
    if(filter.isProfane(message)){
        return callback('Profanity is not allowed')
    }
-
-         io.to(user.room).emit('message',generateMessage(user.username,message))
+    io.to(user.room).emit('message',generateMessage(user.username,message))
          callback()
      })
 
