@@ -24,6 +24,10 @@ app.use(express.static(publicDirectoryPath))
        console.log('New websocket connection')
        socket.emit('message',generateMessage('Admin','Welcome!'))
        socket.broadcast.to(user.room).emit('message',generateMessage(`${user.username} has joined`))
+       io.to(user.room).emit('roomData',{
+           room:user.room,
+           users:getusersinroom(user.room)
+       })
        callback()
         
         
@@ -46,6 +50,10 @@ app.use(express.static(publicDirectoryPath))
 
         if(user){
             io.to(user.room).emit('message',generateMessage('Admin',`${user.username} has left the chat`))
+            io.to(user.room).emit('roomData',{
+                room:user.room,
+                users:getusersinroom(user.room)
+            })
         }
     
      })
